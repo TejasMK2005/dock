@@ -22,13 +22,15 @@ pipeline {
         }
 
         stage('Login to Docker Hub') {
-    steps {
-        withCredentials([string(credentialsId: 'docker-hub-pass', variable: 'DOCKER_PASS')]) {
-            // Use bat for Windows and % to wrap the variable
-            bat "docker login -u tejasise -p %DOCKER_PASS%" 
+            steps {
+        // 'docker-hub-creds' would be the ID of a "Username with password" credential
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', 
+                                                  passwordVariable: 'DOCKER_PASS', 
+                                                  usernameVariable: 'DOCKER_USER')]) {
+                    bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
+                }
+            }
         }
-    }
-}
 
         stage('Push Docker Image') {
             steps {
